@@ -14,10 +14,10 @@ let loding;
 function searching(element) {
     element.textContent = ' '
      loding = setInterval(() => {
-        element.textContent += '...'
-        if (element.textContent === '....') {
+        element.textContent += '.'
+        if (element.textContex === '....') {
             element.textContent = ' '
-        }
+        } 
 
     }, 300);
 }
@@ -58,25 +58,49 @@ function chatGenerate(isAi, value, uniqueId) {
     )
 }
 const userSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const data = new FormData(form);
 
-  
+  //chatGenerate from user
     chatContainer.innerHTML += chatGenerate(false, data.get('prompt'));
 
     // to clear the textarea input 
     form.reset()
 
-    
+    // chatGenerate from ai
     const uniqueId = generateId();
     chatContainer.innerHTML += chatGenerate(true, " ", uniqueId);
-    chatContainer.scrollTop=chatContainer.scrollHeight;// put new message in view
+    chatContainer.scrollTop = chatContainer.scrollHeight;// put new message in view
     
     const message = document.getElementById(uniqueId);
 
      
     searching(message);
+    //fetch data for server
+    const response =await fetch('http://localhost:5000',{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+            prompt:data.get('prompt')
+        })
+    })
+   clearInterval (loding) ;
+   message.innerHTML='';
+   if(response.ok){
+    const data= await response.json();
+    const parsedData= data.bot.trim();
+typeText(message,parsedData)
+   }else{
+    const error=await response.text();
+    message.innerHTML="somthing wrong";
+    alert(error);
+   }
+
+
+
 }
     form. addEventListener('submit',userSubmit)
     form.addEventListener('keyup',(e)=>{
