@@ -1,4 +1,4 @@
-Chat Boot Project
+Chat Bot Project
 
 This is a simple chat bot project that allows users to communicate with a chat bot (roobex) via a web interface.
 
